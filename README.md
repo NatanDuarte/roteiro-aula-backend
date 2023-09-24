@@ -92,7 +92,7 @@ deveria retornar a mensagem "Hello World"
         chai.request(app)
             .get('/')
             .end((err, res) => {
-                expect(res.text).to.equal('Hello, World!');
+                expect(res.body.content).to.be.equal('Hello, World!');
                 done();
             });
   });
@@ -103,7 +103,12 @@ Vamos incluir o retorno na rota /
 
 ```javascript
 app.get('/', (req, res) => {
-  res.send('Hello, World!');
+  try {
+    res.send({ content: 'Hello, World!' });
+  } catch (error) {
+    console.log(error.stack || error);
+    res.status(400).send({ message: error.message })
+  }
 });
 ```
 
@@ -121,7 +126,7 @@ describe('Meu Servidor Express', () => {
       .get('/')
       .end((err, res) => {
         expect(res).to.have.status(200);
-        expect(res.text).to.equal('Hello, World!');
+        expect(res.body.content).to.be.equal('Hello, World!');
         done();
       });
   });
